@@ -80,8 +80,7 @@ function fillAttendance(settings) {
     const rowMatch = select.id.match(/row_(\d+)/);
     const rowIdx = rowMatch ? parseInt(rowMatch[1], 10) : -1;
     if (!futureRows.has(rowIdx)) {
-      const hasAttendance = Array.from(select.options).some((o) => o.value === "0");
-      select.value = hasAttendance ? "0" : select.options[0].value;
+      select.value = "0";
       select.dispatchEvent(new Event("change", { bubbles: true }));
     }
   });
