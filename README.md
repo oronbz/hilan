@@ -3,9 +3,9 @@
 A Chrome extension that auto-fills the Hilan attendance form with one click.
 
 <p align="center">
-  <img src="screenshots/popup-settings.png" alt="Extension popup" width="280">
-  &nbsp;&nbsp;&nbsp;
-  <img src="screenshots/popup-filled.png" alt="After filling" width="280">
+  <img src="screenshots/popup-settings.png" alt="Extension popup" width="240">
+  &nbsp;&nbsp;
+  <img src="screenshots/popup-filled.png" alt="After filling" width="240">
 </p>
 
 ## Features
