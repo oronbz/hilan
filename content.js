@@ -43,7 +43,8 @@ function fillAttendance(settings) {
   exitInputs.forEach((input) => setInputValue(input, settings.exitTime));
   const allSelects = document.querySelectorAll('select[id*="Symbol.SymbolId_EmployeeReports"]');
   allSelects.forEach((select) => {
-    select.value = "0";
+    const hasAttendance = Array.from(select.options).some((o) => o.value === "0");
+    select.value = hasAttendance ? "0" : select.options[0].value;
     select.dispatchEvent(new Event("change", { bubbles: true }));
   });
 
