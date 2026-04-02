@@ -12,6 +12,12 @@ detectHilanAttendancePage();
 
 // --- Helpers ---
 
+function daysInMonth(month) {
+  // Use current year; month is 1-based
+  const year = new Date().getFullYear();
+  return new Date(year, month, 0).getDate();
+}
+
 function setInputValue(input, value) {
   input.focus();
   input.dispatchEvent(new Event("focus", { bubbles: true }));
@@ -41,23 +47,46 @@ function fillAttendance(settings) {
   // Handle flexi Sundays
   if (settings.flexiSundays !== "none") {
     const dayLabels = document.querySelectorAll('span[id*="cellOf_ReportDate_row"]');
-    const sundayIndices = [];
+    const sundayRows = [];
 
     dayLabels.forEach((label) => {
       if (label.innerText.includes("יום א")) {
         const match = label.id.match(/row_(\d+)/);
         if (match) {
-          sundayIndices.push(parseInt(match[1], 10));
+          // Parse date from label text (e.g., "יום א 27/04/2026" or "יום א' 27/04")
+          const dateMatch = label.innerText.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/);
+          const day = dateMatch ? parseInt(dateMatch[1], 10) : null;
+          const month = dateMatch ? parseInt(dateMatch[2], 10) : null;
+          sundayRows.push({ idx: parseInt(match[1], 10), day, month });
         }
       }
     });
 
-    const indicesToMark =
-      settings.flexiSundays === "last"
-        ? sundayIndices.length > 0
-          ? [Math.max(...sundayIndices)]
-          : []
-        : sundayIndices;
+    let indicesToMark;
+    if (settings.flexiSundays === "all") {
+      indicesToMark = sundayRows.map((r) => r.idx);
+    } else {
+      // "last" — only mark the last Sunday of the month, and only if it's loaded
+      // Group by month, find last Sunday of each month, check if it's truly the last
+      indicesToMark = [];
+      const byMonth = {};
+      sundayRows.forEach((r) => {
+        if (r.month != null) {
+          if (!byMonth[r.month]) byMonth[r.month] = [];
+          byMonth[r.month].push(r);
+        }
+      });
+
+      for (const monthSundays of Object.values(byMonth)) {
+        // Find the Sunday with the highest day number in this month
+        const lastSunday = monthSundays.reduce((a, b) => (a.day > b.day ? a : b));
+        // Check that no later Sunday can exist in this month
+        // (next Sunday would be day + 7; if that's still in the same month, this isn't the last)
+        if (lastSunday.day + 7 > 31 || lastSunday.day + 7 > daysInMonth(lastSunday.month)) {
+          indicesToMark.push(lastSunday.idx);
+        }
+      }
+    }
 
     indicesToMark.forEach((idx) => {
       // Clear entry/exit for this Sunday
