@@ -38,17 +38,53 @@ function fillAttendance(settings) {
     return { success: false, error: "No day rows loaded — load days first in the calendar" };
   }
 
-  // Fill all entry/exit times and reset report type to נוכחות
-  entryInputs.forEach((input) => setInputValue(input, settings.entryTime));
-  exitInputs.forEach((input) => setInputValue(input, settings.exitTime));
-  const allSelects = document.querySelectorAll('select[id*="Symbol.SymbolId_EmployeeReports"]');
-  allSelects.forEach((select) => {
-    const hasAttendance = Array.from(select.options).some((o) => o.value === "0");
-    select.value = hasAttendance ? "0" : select.options[0].value;
-    select.dispatchEvent(new Event("change", { bubbles: true }));
+  // Determine which rows are today or in the past
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayLabelsAll = document.querySelectorAll('span[id*="cellOf_ReportDate_row"]');
+  const futureRows = new Set();
+
+  dayLabelsAll.forEach((label) => {
+    const match = label.id.match(/row_(\d+)/);
+    const dateMatch = label.innerText.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?/);
+    if (match && dateMatch) {
+      const day = parseInt(dateMatch[1], 10);
+      const month = parseInt(dateMatch[2], 10) - 1; // JS months are 0-based
+      const year = dateMatch[3] ? parseInt(dateMatch[3], 10) : today.getFullYear();
+      const rowDate = new Date(year, month, day);
+      if (rowDate > today) {
+        futureRows.add(parseInt(match[1], 10));
+      }
+    }
   });
 
-  let filledCount = entryInputs.length;
+  // Fill entry/exit times and reset report type — skip future dates
+  let filledCount = 0;
+  entryInputs.forEach((input) => {
+    const rowMatch = input.id.match(/row_(\d+)/);
+    const rowIdx = rowMatch ? parseInt(rowMatch[1], 10) : -1;
+    if (!futureRows.has(rowIdx)) {
+      setInputValue(input, settings.entryTime);
+      filledCount++;
+    }
+  });
+  exitInputs.forEach((input) => {
+    const rowMatch = input.id.match(/row_(\d+)/);
+    const rowIdx = rowMatch ? parseInt(rowMatch[1], 10) : -1;
+    if (!futureRows.has(rowIdx)) {
+      setInputValue(input, settings.exitTime);
+    }
+  });
+  const allSelects = document.querySelectorAll('select[id*="Symbol.SymbolId_EmployeeReports"]');
+  allSelects.forEach((select) => {
+    const rowMatch = select.id.match(/row_(\d+)/);
+    const rowIdx = rowMatch ? parseInt(rowMatch[1], 10) : -1;
+    if (!futureRows.has(rowIdx)) {
+      const hasAttendance = Array.from(select.options).some((o) => o.value === "0");
+      select.value = hasAttendance ? "0" : select.options[0].value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  });
 
   // Handle flexi Sundays
   if (settings.flexiSundays !== "none") {
