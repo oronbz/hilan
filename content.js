@@ -50,7 +50,7 @@ function fillAttendance(settings) {
     const sundayRows = [];
 
     dayLabels.forEach((label) => {
-      if (label.innerText.includes("יום א")) {
+      if (/יום\s*א/.test(label.innerText)) {
         const match = label.id.match(/row_(\d+)/);
         if (match) {
           // Parse date from label text (e.g., "יום א 27/04/2026" or "יום א' 27/04")

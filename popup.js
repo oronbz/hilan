@@ -42,17 +42,17 @@ autoSaveCheckbox.addEventListener("change", saveSettings);
 
 function setStatus(text, type) {
   statusEl.textContent = text;
-  statusEl.className = type || "";
+  statusEl.className = "status" + (type ? " " + type : "");
+  statusEl.classList.remove("hidden");
 }
 
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   const tab = tabs[0];
   if (tab && tab.url && tab.url.includes("gett.net.hilan.co.il")) {
     fillBtn.disabled = false;
-    setStatus("מוכן", "");
   } else {
     fillBtn.disabled = true;
-    setStatus("לא בדף הנוכחות של הילן", "error");
+    setStatus("Not on Hilan attendance page", "error");
   }
 });
 
@@ -60,7 +60,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
 fillBtn.addEventListener("click", () => {
   fillBtn.disabled = true;
-  setStatus("ממלא...", "");
+  setStatus("Filling...", "");
 
   const settings = {
     entryTime: entryTimeInput.value,
@@ -72,15 +72,15 @@ fillBtn.addEventListener("click", () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { type: "fill", settings }, (response) => {
       if (chrome.runtime.lastError) {
-        setStatus("שגיאה: לא ניתן לתקשר עם הדף", "error");
+        setStatus("Error: cannot communicate with page", "error");
         fillBtn.disabled = false;
         return;
       }
 
       if (response && response.success) {
-        setStatus(`בוצע! מולאו ${response.count} ימים`, "success");
+        setStatus(`Done! Filled ${response.count} days`, "success");
       } else {
-        setStatus(response?.error || "שגיאה לא ידועה", "error");
+        setStatus(response?.error || "Unknown error", "error");
         fillBtn.disabled = false;
       }
     });
