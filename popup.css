@@ -58,8 +58,8 @@ h1 {
 
 .field input[type="text"]:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2);
 }
 
 .radio-group {
@@ -81,7 +81,7 @@ h1 {
 
 .radio-group input[type="radio"] {
   margin-right: 6px;
-  accent-color: #818cf8;
+  accent-color: #f97316;
 }
 
 .checkbox-field {
@@ -101,7 +101,7 @@ h1 {
 
 .checkbox-field input[type="checkbox"] {
   margin-right: 6px;
-  accent-color: #818cf8;
+  accent-color: #f97316;
 }
 
 .btn {
@@ -117,12 +117,12 @@ h1 {
 }
 
 .btn.primary {
-  background: #6366f1;
+  background: #f97316;
   color: #fff;
 }
 
 .btn.primary:hover {
-  background: #818cf8;
+  background: #fb923c;
 }
 
 .btn.primary:disabled {

@@ -2,7 +2,7 @@
 chrome.runtime.onMessage.addListener((message, sender) => {
   if (message.type === "hilan-detected" && sender.tab) {
     chrome.action.setBadgeText({ text: "!", tabId: sender.tab.id });
-    chrome.action.setBadgeBackgroundColor({ color: "#4CAF50", tabId: sender.tab.id });
+    chrome.action.setBadgeBackgroundColor({ color: "#f97316", tabId: sender.tab.id });
   }
 });
 
