@@ -38,9 +38,14 @@ function fillAttendance(settings) {
     return { success: false, error: "No day rows loaded — load days first in the calendar" };
   }
 
-  // Fill all entry/exit times
+  // Fill all entry/exit times and reset report type to נוכחות
   entryInputs.forEach((input) => setInputValue(input, settings.entryTime));
   exitInputs.forEach((input) => setInputValue(input, settings.exitTime));
+  const allSelects = document.querySelectorAll('select[id*="Symbol.SymbolId_EmployeeReports"]');
+  allSelects.forEach((select) => {
+    select.value = "0";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
 
   let filledCount = entryInputs.length;
 
