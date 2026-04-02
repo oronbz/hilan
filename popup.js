@@ -78,8 +78,7 @@ fillBtn.addEventListener("click", () => {
       }
 
       if (response && response.success) {
-        setStatus(`Done! Filled ${response.count} days`, "success");
-        fillBtn.disabled = false;
+        window.close();
       } else {
         setStatus(response?.error || "Unknown error", "error");
         fillBtn.disabled = false;
